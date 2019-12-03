@@ -16,8 +16,10 @@ Include this repository as a module in your existing terraform code:
 ```terraform
 module "aurora" {
   source          = "JamesWoolfenden/aurora/aws"
-  version         = "0.2.14"
+  version         = "0.0.2"
   common_tags     = var.common_tags
+  instances   = var.instances
+  cluster     = var.cluster
 }
 ```
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
