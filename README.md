@@ -18,8 +18,8 @@ module "aurora" {
   source          = "JamesWoolfenden/aurora/aws"
   version         = "0.0.2"
   common_tags     = var.common_tags
-  instances   = var.instances
-  cluster     = var.cluster
+  instances       = var.instances
+  cluster         = var.cluster
 }
 ```
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
@@ -60,7 +60,7 @@ Please use the [issue tracker](https://github.com/JamesWoolfenden/terraform-aws-
 
 ## Copyrights
 
-Copyright © 2019-2019 [Slalom, LLC](https://slalom.com)
+Copyright Â© 2019-2019 [Slalom, LLC](https://slalom.com)
 
 ## License
 
