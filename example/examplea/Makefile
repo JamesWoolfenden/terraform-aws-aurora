@@ -1,11 +1,21 @@
 #Makefile
 
+# Linux (default)
+RM  = rm .terraform/modules/ -fr
+BLAT= rm .terraform/ -fr
+
+# Windows 
+ifeq ($(OS), Windows_NT)
+   RM   = del /Q .terraform\modules\ 
+   BLAT = del /Q .terraform\ 
+endif
+
 .PHONY: all
 
 all: init plan build
 
 init:
-	rm -rf .terraform/modules/
+	$(RM)
 	terraform init -reconfigure
 
 plan: init
@@ -26,3 +36,7 @@ docs:
 valid:
 	tflint
 	terraform fmt -check=true -diff=true
+
+purge:
+	$(BLAT)
+	terraform init -reconfigure
