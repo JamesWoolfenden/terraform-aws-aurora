@@ -21,9 +21,6 @@ repos:
       - id: terraform_fmt
   - repo: git://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
-    stages:
-      - commit
-      - push
     hooks:
       - id: detect-aws-credentials
       - id: detect-private-key
@@ -54,7 +51,7 @@ repos:
       - id: prettier
         exclude_types: [markdown]
   - repo: git://github.com/bridgecrewio/checkov
-    rev: 1.0.162
+    rev: 1.0.164
     hooks:
       - id: checkov
         files: \.tf$
