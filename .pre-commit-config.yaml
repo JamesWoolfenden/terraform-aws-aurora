@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:line-length
 repos:
   - repo: git://github.com/pre-commit/pre-commit-hooks
     rev: v2.5.0
@@ -21,8 +22,8 @@ repos:
       - id: forbid-tabs
         exclude_types: [python, javascript, dtd, markdown, makefile, xml]
         exclude: binary|\.bin$
-  - repo: git://github.com/detailyang/pre-commit-shell
-    rev: 1.0.5
+  - repo: git://github.com/JamesWoolfenden/pre-commit-shell
+    rev: 0.0.1
     hooks:
       - id: shell-lint
   - repo: git://github.com/igorshubovych/markdownlint-cli
