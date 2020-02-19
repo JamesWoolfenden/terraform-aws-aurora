@@ -12,6 +12,7 @@ repos:
       - id: pretty-format-json
         args:
           - --autofix
+      - id: trailing-whitespace
       - id: detect-aws-credentials
       - id: detect-private-key
   - repo: git://github.com/Lucas-C/pre-commit-hooks
