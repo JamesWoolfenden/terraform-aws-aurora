@@ -23,28 +23,7 @@ module "aurora" {
 }
 ```
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Providers
-
-| Name | Version |
-|------|---------|
-| aws | n/a |
-
-## Inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:-----:|
-| availability\_zones | List of availability zones | `list` | <pre>[<br>  "eu-west-1a",<br>  "eu-west-1b",<br>  "eu-west-1c"<br>]<br></pre> | no |
-| cluster | All the properties of an Aurora Cluster | `map` | n/a | yes |
-| common\_tags | This is to help you add tags to your cloud objects | `map` | n/a | yes |
-| instances | Settings of you database instances | `any` | n/a | yes |
-
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| cluster | n/a |
-| instances | n/a |
-
+Error: no lines in file
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Related Projects
 
@@ -100,8 +79,8 @@ under the License.
 [logo]: https://gist.githubusercontent.com/JamesWoolfenden/5c457434351e9fe732ca22b78fdd7d5e/raw/15933294ae2b00f5dba6557d2be88f4b4da21201/slalom-logo.png
 [website]: https://slalom.com
 [github]: https://github.com/jameswoolfenden
-[linkedin]: https://www.linkedin.com/company/slalom-consulting/
-[twitter]: https://twitter.com/Slalom
+[linkedin]: https://www.linkedin.com/in/jameswoolfenden/
+[twitter]: https://twitter.com/JimWoolfenden
 
 [share_twitter]: https://twitter.com/intent/tweet/?text=terraform-aws-aurora&url=https://github.com/JamesWoolfenden/terraform-aws-aurora
 [share_linkedin]: https://www.linkedin.com/shareArticle?mini=true&title=terraform-aws-aurora&url=https://github.com/JamesWoolfenden/terraform-aws-aurora
