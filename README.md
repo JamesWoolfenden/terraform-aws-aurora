@@ -1,6 +1,11 @@
 [![Slalom][logo]](https://slalom.com)
 
-# terraform-aws-aurora [![Build Status](https://github.com/JamesWoolfenden/terraform-aws-aurora/workflows/Verify%20and%20Bump/badge.svg?branch=master)](https://github.com/JamesWoolfenden/terraform-aws-aurora) [![Latest Release](https://img.shields.io/github/release/JamesWoolfenden/terraform-aws-aurora.svg)](https://github.com/JamesWoolfenden/terraform-aws-aurora/releases/latest)  [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+# terraform-aws-aurora
+
+[![Build Status](https://github.com/JamesWoolfenden/terraform-aws-aurora/workflows/Verify%20and%20Bump/badge.svg?branch=master)](https://github.com/JamesWoolfenden/terraform-aws-aurora)
+[![Latest Release](https://img.shields.io/github/release/JamesWoolfenden/terraform-aws-aurora.svg)](https://github.com/JamesWoolfenden/terraform-aws-aurora/releases/latest)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![checkov](https://img.shields.io/badge/checkov-verified-brightgreen)](https://www.checkov.io/)
 
 Terraform module - creates Aurpora cluster and instances
 
@@ -22,8 +27,41 @@ module "aurora" {
   cluster         = var.cluster
 }
 ```
+
+## IAM Permissions
+
+```json
+{
+}
+```
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-Error: no lines in file
+## Requirements
+
+No requirements.
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| aws | n/a |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| availability\_zones | List of availability zones | `list` | <pre>[<br>  "eu-west-1a",<br>  "eu-west-1b",<br>  "eu-west-1c"<br>]</pre> | no |
+| cluster | All the properties of an Aurora Cluster | `map` | n/a | yes |
+| common\_tags | This is to help you add tags to your cloud objects | `map` | n/a | yes |
+| instances | Settings of you database instances | `any` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| cluster | n/a |
+| instances | n/a |
+
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Related Projects
 
