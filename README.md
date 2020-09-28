@@ -34,7 +34,6 @@ module "aurora" {
 ```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-
 ## Requirements
 
 No requirements.
@@ -42,24 +41,24 @@ No requirements.
 ## Providers
 
 | Name | Version |
-| ---- | ------- |
-| aws  | n/a     |
+|------|---------|
+| aws | n/a |
 
 ## Inputs
 
-| Name               | Description                                        | Type   | Default                                                                | Required |
-| ------------------ | -------------------------------------------------- | ------ | ---------------------------------------------------------------------- | :------: |
-| availability_zones | List of availability zones                         | `list` | <pre>[<br> "eu-west-1a",<br> "eu-west-1b",<br> "eu-west-1c"<br>]</pre> |    no    |
-| cluster            | All the properties of an Aurora Cluster            | `map`  | n/a                                                                    |   yes    |
-| common_tags        | This is to help you add tags to your cloud objects | `map`  | n/a                                                                    |   yes    |
-| instances          | Settings of you database instances                 | `any`  | n/a                                                                    |   yes    |
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| availability\_zones | List of availability zones | `list` | <pre>[<br>  "eu-west-1a",<br>  "eu-west-1b",<br>  "eu-west-1c"<br>]</pre> | no |
+| cluster | All the properties of an Aurora Cluster | `map` | n/a | yes |
+| common\_tags | This is to help you add tags to your cloud objects | `map` | n/a | yes |
+| instances | Settings of you database instances | `any` | n/a | yes |
 
 ## Outputs
 
-| Name      | Description |
-| --------- | ----------- |
-| cluster   | n/a         |
-| instances | n/a         |
+| Name | Description |
+|------|-------------|
+| cluster | n/a |
+| instances | n/a |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
