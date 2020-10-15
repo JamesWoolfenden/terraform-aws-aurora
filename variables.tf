@@ -3,12 +3,6 @@ variable "common_tags" {
   type        = map
 }
 
-variable "availability_zones" {
-  type        = list
-  description = "List of availability zones"
-  default     = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
-}
-
 variable "cluster" {
   description = "All the properties of an Aurora Cluster"
   type        = map
