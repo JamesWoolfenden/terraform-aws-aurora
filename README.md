@@ -34,6 +34,10 @@ module "aurora" {
 ```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+No requirements.
+
 ## Providers
 
 | Name | Version |
@@ -43,9 +47,9 @@ module "aurora" {
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:-----:|
-| cluster | All the properties of an Aurora Cluster | `map` | n/a | yes |
-| common\_tags | This is to help you add tags to your cloud objects | `map` | n/a | yes |
+|------|-------------|------|---------|:--------:|
+| cluster | All the properties of an Aurora Cluster | `map(any)` | n/a | yes |
+| common\_tags | This is to help you add tags to your cloud objects | `map(any)` | n/a | yes |
 | instances | Settings of you database instances | `any` | n/a | yes |
 
 ## Outputs

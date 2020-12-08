@@ -1,11 +1,11 @@
 variable "common_tags" {
   description = "This is to help you add tags to your cloud objects"
-  type        = map
+  type        = map(any)
 }
 
 variable "cluster" {
   description = "All the properties of an Aurora Cluster"
-  type        = map
+  type        = map(any)
   default = {
     cluster_identifier = "aurora-cluster-demo"
     database_name      = "mydb"
