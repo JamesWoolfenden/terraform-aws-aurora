@@ -4,5 +4,6 @@ resource "aws_rds_cluster" "default" {
   database_name      = var.cluster["database_name"]
   master_username    = var.cluster["master_username"]
   master_password    = var.cluster["master_password"]
+  storage_encrypted  = true
   tags               = var.common_tags
 }
