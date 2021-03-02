@@ -37,6 +37,17 @@ module "aurora" {
 {}
 ```
 
+## IAC comparison
+
+The makefile in the example runs 4 of the main IAC SAST tools:
+
+- Checkov
+- TFSec
+- Terrascan
+- Kics
+
+You can run these as part of the validate scripts contained here and all 4 will output to the **output** folder.
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
@@ -85,7 +96,7 @@ Please use the [issue tracker](https://github.com/JamesWoolfenden/terraform-aws-
 
 ## Copyrights
 
-Copyright © 2019-2021 James Woolfenden
+Copyright 2019-2021 James Woolfenden
 
 ## License
 
