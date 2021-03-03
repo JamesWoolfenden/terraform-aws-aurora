@@ -52,9 +52,10 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.8
+      - name: lastversion
+        run: pip3 install lastversion
       - name: terrascan
         run: >
-          pip3 install lastversion
           now=$(lastversion accurics/terrascan)
           curl --location https://github.com/accurics/terrascan/releases/download/v${now}/terrascan_${now}_Linux_x86_64.tar.gz --output terrascan.tar.gz
           tar -xvf terrascan.tar.gz
