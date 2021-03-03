@@ -4,6 +4,7 @@ name: Compare
 on:
   schedule:
     - cron: '00 7 * * SAT'
+  workflow_dispatch:
 
 env:
   terraform: 0.14.5
