@@ -49,11 +49,17 @@ jobs:
         with:
           ref: ${{ env.branch }}
           token: ${{ github.token }}
-      - name: Install terrascan
-        uses: jaxxstorm/action-install-gh-release@release/v1-alpha
+      - uses: actions/setup-python@v2
         with:
-          repo: accurics/terrascan
-      - run: terrascan scan -d  ${{ env.tf_target_dir }} -o json -x json >../../output/terrascan.json
+          python-version: 3.8
+      - name: terrascan
+        run: >
+          pip3 install lastversion
+          now=$(lastversion accurics/terrascan)
+          curl --location https://github.com/accurics/terrascan/releases/download/v${now}/terrascan_${now}_Linux_x86_64.tar.gz --output terrascan.tar.gz
+          tar -xvf terrascan.tar.gz
+          install terrascan /usr/local/bin
+          terrascan scan -d  ${{ env.tf_target_dir }} -o json -x json >../../output/terrascan.json
   kics:
     runs-on: ubuntu-latest
     steps:
