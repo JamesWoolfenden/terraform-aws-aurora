@@ -39,7 +39,6 @@ jobs:
         uses: bridgecrewio/checkov-action@master
         with:
           directory: ${{ env.tf_target_dir }}
-          soft_fail: true
           output_format: json
   terrascan:
     runs-on: ubuntu-latest
