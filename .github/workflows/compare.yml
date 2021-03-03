@@ -1,0 +1,68 @@
+---
+# yamllint disable rule:line-length
+name: Verify and Bump
+on:
+  schedule:
+    - cron: '00 7 * * SAT'
+
+env:
+  terraform: 0.14.5
+  terraform-docs: 0.11.2
+  tf_target_dir: example/examplea
+  branch: master
+jobs:
+  tfsec:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.branch }}
+          token: ${{ github.token }}
+      - name: Terraform security scan
+        uses: triat/terraform-security-scan@v2.0.2
+        with:
+          tfsec_actions_working_dir: ${{ env.tf_target_dir }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  checkov:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.branch }}
+          token: ${{ github.token }}
+      - name: Run Checkov action
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: ${{ env.tf_target_dir }}
+          soft_fail: true
+          output_format: json
+  terrascan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.branch }}
+          token: ${{ github.token }}
+      - name: Install terrascan
+        uses: jaxxstorm/action-install-gh-release@release/v1-alpha
+        with:
+          repo: accurics/terrascan
+      - run: terrascan scan -d  ${{ env.tf_target_dir }}
+  kics:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.branch }}
+          token: ${{ github.token }}
+      - name: run kics Scan
+        uses: checkmarx/kics-action@v1.0
+        with:
+          path: ${{ env.tf_target_dir }}
+          output_path: 'kics.json'
