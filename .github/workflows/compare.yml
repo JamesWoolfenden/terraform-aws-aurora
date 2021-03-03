@@ -25,7 +25,7 @@ jobs:
         with:
           tfsec_actions_working_dir: ${{ env.tf_target_dir }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
   checkov:
     runs-on: ubuntu-latest
     steps:
@@ -53,7 +53,7 @@ jobs:
         uses: jaxxstorm/action-install-gh-release@release/v1-alpha
         with:
           repo: accurics/terrascan
-      - run: terrascan scan -d  ${{ env.tf_target_dir }}
+      - run: terrascan scan -d  ${{ env.tf_target_dir }} -o json -x json >../../output/terrascan.json
   kics:
     runs-on: ubuntu-latest
     steps:
