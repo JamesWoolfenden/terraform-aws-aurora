@@ -70,14 +70,25 @@ No Modules.
 | [aws_availability_zones](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) |
 | [aws_rds_cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster) |
 | [aws_rds_cluster_instance](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster_instance) |
+| [aws_rds_cluster_parameter_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster_parameter_group) |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| availability\_zone | n/a | `string` | `""` | no |
 | cluster | All the properties of an Aurora Cluster | `map(any)` | n/a | yes |
 | common\_tags | This is to help you add tags to your cloud objects | `map(any)` | n/a | yes |
+| enabled\_cloudwatch\_logs\_exports | Set of log types to export to cloudwatch. If omitted, no logs will be exported | `list(any)` | <pre>[<br>  "audit"<br>]</pre> | no |
+| engine | n/a | `string` | `"aurora"` | no |
+| engine\_version | n/a | `string` | `"5.7.mysql_aurora.2.03.2"` | no |
 | instances | Settings of you database instances | `any` | n/a | yes |
+| kms\_key\_id | n/a | `string` | n/a | yes |
+| master\_password | n/a | `string` | n/a | yes |
+| monitoring\_interval | n/a | `number` | `0` | no |
+| monitoring\_role\_arn | n/a | `string` | `""` | no |
+| preferred\_backup\_window | n/a | `string` | `"04:00-09:00"` | no |
+| promotion\_tier | Failover Priority setting on instance level. The reader who has lower tier has higher priority to get promoted to writer | `number` | `0` | no |
 
 ## Outputs
 

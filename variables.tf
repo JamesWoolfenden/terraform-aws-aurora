@@ -11,3 +11,7 @@ variable "cluster" {
 variable "instances" {
   description = "Settings of you database instances"
 }
+
+variable "kms_key_id" {
+  type = string
+}

@@ -1,5 +1,6 @@
 output "cluster" {
-  value = module.aurora.cluster
+  value     = module.aurora.cluster
+  sensitive = true
 }
 
 output "instances" {
