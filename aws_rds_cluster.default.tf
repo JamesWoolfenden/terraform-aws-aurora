@@ -15,29 +15,3 @@ resource "aws_rds_cluster" "default" {
   kms_key_id                      = var.kms_key_id
   tags                            = var.common_tags
 }
-
-variable "master_password" {
-  type      = string
-  sensitive = true
-}
-
-variable "enabled_cloudwatch_logs_exports" {
-  type        = list(any)
-  description = "Set of log types to export to cloudwatch. If omitted, no logs will be exported"
-  default     = ["audit"]
-  //condition must contain audit
-  //valid audit, error, general, slowquery, postgresql
-}
-
-variable "engine" {
-  type    = string
-  default = "aurora"
-  validation {
-    condition     = can(regex("aurora|aurora-mysql|aurora-postgresql", var.engine))
-    error_message = "Valid values are aurora, aurora-mysql or aurora-postgresql."
-  }
-}
-
-variable "engine_version" {
-  default = "5.7.mysql_aurora.2.03.2"
-}
