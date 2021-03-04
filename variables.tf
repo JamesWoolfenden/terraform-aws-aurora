@@ -15,3 +15,24 @@ variable "instances" {
 variable "kms_key_id" {
   type = string
 }
+
+variable "preferred_backup_window" {
+  default = "04:00-09:00"
+}
+variable "availability_zone" {
+  default = ""
+}
+variable "promotion_tier" {
+  type        = number
+  description = " Failover Priority setting on instance level. The reader who has lower tier has higher priority to get promoted to writer"
+  default     = 0
+}
+
+variable "monitoring_interval" {
+  default = 0
+}
+
+variable "monitoring_role_arn" {
+  type    = string
+  default = ""
+}

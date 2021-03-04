@@ -17,24 +17,3 @@ resource "aws_rds_cluster_instance" "instances" {
   preferred_backup_window = var.preferred_backup_window
   tags                    = var.common_tags
 }
-
-variable "preferred_backup_window" {
-  default = "04:00-09:00"
-}
-variable "availability_zone" {
-  default = ""
-}
-variable "promotion_tier" {
-  type        = number
-  description = " Failover Priority setting on instance level. The reader who has lower tier has higher priority to get promoted to writer"
-  default     = 0
-}
-
-variable "monitoring_interval" {
-  default = 0
-}
-
-variable "monitoring_role_arn" {
-  type    = string
-  default = ""
-}

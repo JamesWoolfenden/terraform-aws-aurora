@@ -4,7 +4,7 @@ module "aurora" {
   instances       = var.instances
   cluster         = var.cluster
   master_password = random_string.password.result
-  kms_key_id      = aws_kms_key_id.aurora.id
+  kms_key_id      = aws_kms_key.aurora.id
 }
 
 resource "random_string" "password" {
@@ -12,6 +12,7 @@ resource "random_string" "password" {
 }
 
 
-resource "aws_kms_key_id" "aurora" {
+resource "aws_kms_key" "aurora" {
 
+  enable_key_rotation = true
 }
