@@ -4,9 +4,14 @@ module "aurora" {
   instances       = var.instances
   cluster         = var.cluster
   master_password = random_string.password.result
-  kms_key_id      = ""
+  kms_key_id      = aws_kms_key_id.aurora.id
 }
 
 resource "random_string" "password" {
   length = 16
+}
+
+
+resource "aws_kms_key_id" "aurora" {
+
 }
