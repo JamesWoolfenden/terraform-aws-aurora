@@ -81,6 +81,7 @@ jobs:
         with:
           name: kics
           path: kics.json
+          if-no-files-found: error
 
   upload:
     needs: [kics, terrascan, checkov, tfsec]
@@ -99,8 +100,7 @@ jobs:
           echo $TIME
       - uses: actions/download-artifact@v2
         with:
-          name: kics
-          path: /tos3/${{ steps.time.outputs.time }}
+          path: /tos3/${{ steps.time.outputs.time }}/
       - uses: jakejarvis/s3-sync-action@master
         with:
           args: --acl public-read --follow-symlinks --delete
