@@ -93,11 +93,9 @@ jobs:
         with:
           timeZone: 8
           format: 'YYYY-MM-DD-HH-mm-ss'
-      - name: Usage
-        env:
-          TIME: "${{ steps.time.outputs.time }}"
+      - name: mkdir
         run: |
-          echo $TIME
+          mkdir  "/tos3/${{ steps.time.outputs.time }}/"
       - uses: actions/download-artifact@v2
         with:
           path: /tos3/${{ steps.time.outputs.time }}/
