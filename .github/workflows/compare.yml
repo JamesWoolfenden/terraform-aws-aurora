@@ -108,4 +108,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_KEY }}
           AWS_REGION: 'eu-west-2'
           SOURCE_DIR: tos3
-          DEST_DIR: ${{ github.repository }}-${{ steps.time.outputs.time }}
+          DEST_DIR: ${{ github.repository }}/${{ steps.time.outputs.time }}
