@@ -13,6 +13,5 @@ resource "random_string" "password" {
 
 
 resource "aws_kms_key" "aurora" {
-
   enable_key_rotation = true
 }

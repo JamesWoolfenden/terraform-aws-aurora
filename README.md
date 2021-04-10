@@ -57,45 +57,48 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| aws | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 
 ## Modules
 
-No Modules.
+No modules.
 
 ## Resources
 
-| Name |
-|------|
-| [aws_availability_zones](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) |
-| [aws_rds_cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster) |
-| [aws_rds_cluster_instance](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster_instance) |
-| [aws_rds_cluster_parameter_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster_parameter_group) |
+| Name | Type |
+|------|------|
+| [aws_rds_cluster.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster) | resource |
+| [aws_rds_cluster_instance.instances](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster_instance) | resource |
+| [aws_rds_cluster_parameter_group.examplea](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster_parameter_group) | resource |
+| [aws_availability_zones.zones](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| availability\_zone | n/a | `string` | `""` | no |
-| cluster | All the properties of an Aurora Cluster | `map(any)` | n/a | yes |
-| common\_tags | This is to help you add tags to your cloud objects | `map(any)` | n/a | yes |
-| enabled\_cloudwatch\_logs\_exports | Set of log types to export to cloudwatch. If omitted, no logs will be exported | `list(any)` | <pre>[<br>  "audit"<br>]</pre> | no |
-| engine | n/a | `string` | `"aurora"` | no |
-| engine\_version | n/a | `string` | `"5.7.mysql_aurora.2.03.2"` | no |
-| instances | Settings of you database instances | `any` | n/a | yes |
-| kms\_key\_id | n/a | `string` | n/a | yes |
-| master\_password | n/a | `string` | n/a | yes |
-| monitoring\_interval | n/a | `number` | `0` | no |
-| monitoring\_role\_arn | n/a | `string` | `""` | no |
-| preferred\_backup\_window | n/a | `string` | `"04:00-09:00"` | no |
-| promotion\_tier | Failover Priority setting on instance level. The reader who has lower tier has higher priority to get promoted to writer | `number` | `0` | no |
+| <a name="input_availability_zone"></a> [availability\_zone](#input\_availability\_zone) | n/a | `string` | `""` | no |
+| <a name="input_backup_retention_period"></a> [backup\_retention\_period](#input\_backup\_retention\_period) | Schedule your Backup retention and enable | `number` | `1` | no |
+| <a name="input_cluster"></a> [cluster](#input\_cluster) | All the properties of an Aurora Cluster | `map(any)` | n/a | yes |
+| <a name="input_common_tags"></a> [common\_tags](#input\_common\_tags) | This is to help you add tags to your cloud objects | `map(any)` | n/a | yes |
+| <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | n/a | `bool` | `true` | no |
+| <a name="input_enabled_cloudwatch_logs_exports"></a> [enabled\_cloudwatch\_logs\_exports](#input\_enabled\_cloudwatch\_logs\_exports) | Set of log types to export to cloudwatch. If omitted, no logs will be exported | `list(any)` | <pre>[<br>  "audit"<br>]</pre> | no |
+| <a name="input_engine"></a> [engine](#input\_engine) | n/a | `string` | `"aurora"` | no |
+| <a name="input_engine_version"></a> [engine\_version](#input\_engine\_version) | n/a | `string` | `"5.7.mysql_aurora.2.03.2"` | no |
+| <a name="input_iam_database_authentication_enabled"></a> [iam\_database\_authentication\_enabled](#input\_iam\_database\_authentication\_enabled) | Use IAM | `bool` | `true` | no |
+| <a name="input_instances"></a> [instances](#input\_instances) | Settings of you database instances | `any` | n/a | yes |
+| <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | n/a | `string` | n/a | yes |
+| <a name="input_master_password"></a> [master\_password](#input\_master\_password) | n/a | `string` | n/a | yes |
+| <a name="input_monitoring_interval"></a> [monitoring\_interval](#input\_monitoring\_interval) | The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance | `string` | `1` | no |
+| <a name="input_monitoring_role_arn"></a> [monitoring\_role\_arn](#input\_monitoring\_role\_arn) | n/a | `string` | `""` | no |
+| <a name="input_preferred_backup_window"></a> [preferred\_backup\_window](#input\_preferred\_backup\_window) | n/a | `string` | `"04:00-09:00"` | no |
+| <a name="input_promotion_tier"></a> [promotion\_tier](#input\_promotion\_tier) | Failover Priority setting on instance level. The reader who has lower tier has higher priority to get promoted to writer | `number` | `0` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| cluster | n/a |
-| instances | n/a |
+| <a name="output_cluster"></a> [cluster](#output\_cluster) | n/a |
+| <a name="output_instances"></a> [instances](#output\_instances) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Related Projects

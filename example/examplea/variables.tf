@@ -10,7 +10,6 @@ variable "cluster" {
     cluster_identifier = "aurora-cluster-demo"
     database_name      = "mydb"
     master_username    = "foo"
-    master_password    = "barbut8chars"
   }
 }
 
