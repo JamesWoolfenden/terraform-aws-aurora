@@ -19,9 +19,11 @@ variable "kms_key_id" {
 variable "preferred_backup_window" {
   default = "04:00-09:00"
 }
+
 variable "availability_zone" {
   default = ""
 }
+
 variable "promotion_tier" {
   type        = number
   description = " Failover Priority setting on instance level. The reader who has lower tier has higher priority to get promoted to writer"
@@ -86,5 +88,5 @@ variable "iam_database_authentication_enabled" {
 variable "backup_retention_period" {
   type        = number
   description = "Schedule your Backup retention and enable"
-  default     = 1
+  default     = 45
 }

@@ -1,0 +1,18 @@
+version: 0.1
+resource_usage:
+  module.aurora.aws_rds_cluster.default:
+    average_statements_per_hr: 0
+    backtrack_window_hrs: 0
+    backup_snapshot_size_gb: 0
+    capacity_units_per_hr: 0
+    change_records_per_statement: 0
+    read_requests_per_sec: 0
+    snapshot_export_size_gb: 0
+    storage_gb: 0
+    write_requests_per_sec: 0
+  module.aurora.aws_rds_cluster_instance.instances[0]:
+    monthly_cpu_credit_hrs: 0
+    vcpu_count: 0
+  module.aurora.aws_rds_cluster_instance.instances[1]:
+    monthly_cpu_credit_hrs: 0
+    vcpu_count: 0

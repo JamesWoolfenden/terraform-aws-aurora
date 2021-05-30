@@ -31,6 +31,37 @@ module "aurora" {
 }
 ```
 
+## Costs
+
+Using the example.
+
+```Text
+Monthly cost estimate
+
+Project: .
+
+ Name                                                       Monthly Qty  Unit                    Monthly Cost
+
+ aws_kms_key.aurora
+ ├─ Customer master key                                               1  months                         $1.00
+ ├─ Requests                                          Monthly cost depends on usage: $0.03 per 10k requests
+ ├─ ECC GenerateDataKeyPair requests                  Monthly cost depends on usage: $0.10 per 10k requests
+ └─ RSA GenerateDataKeyPair requests                  Monthly cost depends on usage: $0.10 per 10k requests
+
+ module.aurora.aws_rds_cluster.default
+ ├─ Storage                                                           0  GB                             $0.00
+ └─ I/O rate                                                          0  1M requests                    $0.00
+
+ module.aurora.aws_rds_cluster_instance.instances[0]
+ └─ Database instance (on-demand, db.r4.large)                      730  hours                        $248.20
+
+ module.aurora.aws_rds_cluster_instance.instances[1]
+ └─ Database instance (on-demand, db.r4.large)                      730  hours                        $248.20
+
+ PROJECT TOTAL                                                                                        $497.40
+
+```
+
 ## IAM Permissions
 
 ```json
@@ -77,7 +108,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_availability_zone"></a> [availability\_zone](#input\_availability\_zone) | n/a | `string` | `""` | no |
-| <a name="input_backup_retention_period"></a> [backup\_retention\_period](#input\_backup\_retention\_period) | Schedule your Backup retention and enable | `number` | `1` | no |
+| <a name="input_backup_retention_period"></a> [backup\_retention\_period](#input\_backup\_retention\_period) | Schedule your Backup retention and enable | `number` | `45` | no |
 | <a name="input_cluster"></a> [cluster](#input\_cluster) | All the properties of an Aurora Cluster | `map(any)` | n/a | yes |
 | <a name="input_common_tags"></a> [common\_tags](#input\_common\_tags) | This is to help you add tags to your cloud objects | `map(any)` | n/a | yes |
 | <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | n/a | `bool` | `true` | no |
