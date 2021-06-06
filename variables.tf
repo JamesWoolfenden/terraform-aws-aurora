@@ -88,5 +88,5 @@ variable "iam_database_authentication_enabled" {
 variable "backup_retention_period" {
   type        = number
   description = "Schedule your Backup retention and enable"
-  default     = 45
+  default     = 35
 }
