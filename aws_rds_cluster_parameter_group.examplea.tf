@@ -15,6 +15,16 @@ resource "aws_rds_cluster_parameter_group" "examplea" {
     name  = "tls_version"
     value = "TLS 1.2"
   }
+
+  parameter {
+    name  = "log_statement"
+    value = "all"
+  }
+
+  parameter {
+    name  = "log_min_duration_statement"
+    value = "1"
+  }
 }
 
 /*
