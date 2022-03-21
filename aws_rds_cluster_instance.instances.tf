@@ -1,12 +1,13 @@
 resource "aws_rds_cluster_instance" "instances" {
-  count               = length(var.instances)
-  engine              = var.engine
-  engine_version      = var.engine_version
-  availability_zone   = var.availability_zone
-  identifier          = var.instances[count.index]["identifier"]
-  cluster_identifier  = aws_rds_cluster.default.id
-  instance_class      = var.instances[count.index]["instance_class"]
-  publicly_accessible = false
+  count                      = length(var.instances)
+  auto_minor_version_upgrade = true
+  engine                     = var.engine
+  engine_version             = var.engine_version
+  availability_zone          = var.availability_zone
+  identifier                 = var.instances[count.index]["identifier"]
+  cluster_identifier         = aws_rds_cluster.default.id
+  instance_class             = var.instances[count.index]["instance_class"]
+  publicly_accessible        = false
   //db_subnet_group_name    = "value"
   db_parameter_group_name = aws_rds_cluster_parameter_group.examplea.name
   apply_immediately       = true
