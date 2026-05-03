@@ -150,17 +150,30 @@ resource "aws_iam_policy" "terraform_pike" {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": [
-                "ec2:DescribeAvailabilityZones"
+                "ec2:DescribeAccountAttributes",
+                "ec2:DescribeAvailabilityZones",
+                "ec2:DescribeInternetGateways",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeVpcAttribute",
+                "ec2:DescribeVpcs"
             ],
-            "Resource": "*"
+            "Resource": [
+                "*"
+            ]
         },
         {
             "Sid": "VisualEditor1",
             "Effect": "Allow",
             "Action": [
+                "iam:CreateServiceLinkedRole",
+                "iam:GetRole",
+                "iam:ListRoles",
                 "iam:PassRole"
             ],
-            "Resource": "*"
+            "Resource": [
+                "*"
+            ]
         },
         {
             "Sid": "VisualEditor2",
@@ -170,20 +183,28 @@ resource "aws_iam_policy" "terraform_pike" {
                 "rds:CreateDBCluster",
                 "rds:CreateDBClusterParameterGroup",
                 "rds:CreateDBInstance",
+                "rds:CreateDBSnapshot",
                 "rds:DeleteDBCluster",
                 "rds:DeleteDBClusterParameterGroup",
+                "rds:DeleteDBInstance",
                 "rds:DescribeDBClusterParameterGroups",
                 "rds:DescribeDBClusterParameters",
                 "rds:DescribeDBClusters",
+                "rds:DescribeDBEngineVersions",
+                "rds:DescribeDBInstanceAutomatedBackups",
                 "rds:DescribeDBInstances",
+                "rds:DescribeDBParameterGroups",
                 "rds:DescribeGlobalClusters",
                 "rds:ListTagsForResource",
                 "rds:ModifyDBCluster",
                 "rds:ModifyDBClusterParameterGroup",
                 "rds:ModifyDBInstance",
+                "rds:RebootDBInstance",
                 "rds:RemoveTagsFromResource"
             ],
-            "Resource": "*"
+            "Resource": [
+                "*"
+            ]
         }
     ]
 })

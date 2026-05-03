@@ -2,7 +2,6 @@ variable "common_tags" {
   description = "This is to help you add tags to your cloud objects"
   type        = map(any)
 }
-
 variable "cluster" {
   description = "All the properties of an Aurora Cluster"
   type        = map(any)
@@ -12,7 +11,6 @@ variable "cluster" {
     master_username    = "foo"
   }
 }
-
 variable "instances" {
   default = [{
     identifier     = "aurora-cluster-demo-1"

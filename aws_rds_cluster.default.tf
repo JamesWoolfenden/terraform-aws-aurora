@@ -1,6 +1,6 @@
 resource "aws_rds_cluster" "default" {
-  # checkov:skip=CKV_AWS_133: ADD REASON
-  # checkov:skip=CKV2_AWS_8: ADD REASON
+  # checkov:skip=CKV_AWS_133: backup_retention_period is configurable via variable
+  # checkov:skip=CKV2_AWS_8: AWS Backup plan managed outside this module
   backup_retention_period = var.backup_retention_period
   cluster_identifier      = var.cluster["cluster_identifier"]
   //check its not mysql 5.6 if engine is mysql

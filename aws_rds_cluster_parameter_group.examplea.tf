@@ -26,22 +26,3 @@ resource "aws_rds_cluster_parameter_group" "examplea" {
     value = "1"
   }
 }
-
-/*
-mysql
-aws rds modify-db-cluster \
-    --db-cluster-identifier mydbcluster \
-    --cloudwatch-logs-export-configuration '{"EnableLogTypes":["error","general","slowquery","audit"]}'
-
-https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.CloudWatch.html
-
-postgresql
-rds.force_ssl
-ssl
-ssl_max_protocol_version
-ssl_min_protocol_version
-pgaudit.log
-
-https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Reference.html
-
-*/
