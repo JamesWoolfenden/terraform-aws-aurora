@@ -19,5 +19,6 @@ resource "aws_rds_cluster" "default" {
   enabled_cloudwatch_logs_exports = var.enabled_cloudwatch_logs_exports
   storage_encrypted               = true
   kms_key_id                      = var.kms_key_id
+  copy_tags_to_snapshot           = true
   tags                            = var.common_tags
 }
