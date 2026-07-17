@@ -1,0 +1,78 @@
+{
+  "findings": [
+    {
+      "confidence": "high",
+      "explanation": "Neither the cluster nor a module variable exposes preferred_maintenance_window. Without it, AWS may apply engine patches and maintenance at any time, including business hours, and maintenance on Aurora clusters can trigger a brief failover. preferred_backup_window is already handled as a variable with a sensible off-peak default (04:00-09:00) elsewhere in this module \u2014 maintenance window has no equivalent.",
+      "file": "aws_rds_cluster.default.tf",
+      "first_seen": "2026-07-16",
+      "fix": "variable \"preferred_maintenance_window\" {\n  type        = string\n  description = \"Preferred maintenance window\"\n  default     = \"sun:03:00-sun:04:00\"\n}\n\n# in aws_rds_cluster.default.tf:\n  preferred_maintenance_window = var.preferred_maintenance_window",
+      "fixable": true,
+      "id": "HOLDEN_BP_001",
+      "last_seen": "2026-07-16",
+      "line": 1,
+      "principle": "reliability",
+      "remediation": "Add a preferred_maintenance_window variable (e.g. default \"sun:03:00-sun:04:00\") and set it on aws_rds_cluster.default, following the same pattern already used for preferred_backup_window.",
+      "resource": "aws_rds_cluster.default",
+      "severity": "MEDIUM",
+      "status": "fixed",
+      "title": "aws_rds_cluster.default has no preferred_maintenance_window"
+    },
+    {
+      "confidence": "high",
+      "explanation": "var.engine's validation block advertises support for aurora-mysql, aurora-postgresql, mysql, and postgres (variables.tf), but this resource hardcodes family = \"aurora5.7\" (an Aurora MySQL family) with no variable and no relationship to var.engine at all. Any consumer who sets engine to aurora-postgresql, mysql, or postgres gets a parameter group whose family doesn't match the cluster's actual engine, which AWS will reject at apply time. The resource's Terraform-local name (\"examplea\") and its name = \"rds-cluster-pg\" are also hardcoded, so two instantiations of this module in the same account/region collide on the parameter group name.",
+      "file": "aws_rds_cluster_parameter_group.examplea.tf",
+      "first_seen": "2026-07-16",
+      "fixable": false,
+      "id": "HOLDEN_BP_002",
+      "last_seen": "2026-07-17",
+      "line": 1,
+      "principle": "maintainability",
+      "remediation": "Derive family from var.engine/var.engine_version (e.g. a lookup map from engine name to family prefix), and parameterize the parameter group name (or switch to name_prefix) so multiple module instances don't collide.",
+      "resource": "aws_rds_cluster_parameter_group.examplea",
+      "severity": "MEDIUM",
+      "status": "fixed",
+      "title": "aws_rds_cluster_parameter_group hardcodes family/name with no variables \u2014 breaks for 3 of the 4 supported engines"
+    },
+    {
+      "confidence": "high",
+      "explanation": "aws_rds_cluster_instance.monitoring_interval is a number in the AWS provider schema, but the module declares var.monitoring_interval as type = string with default = 1 (a bare number Terraform silently coerces). This means the module's own type system doesn't actually constrain the input to numeric values the way it looks like it should \u2014 a non-numeric string passes the declared type check and only fails later, either in the validation regex or as an opaque provider error, instead of failing cleanly at the variable boundary.",
+      "file": "variables.tf",
+      "first_seen": "2026-07-16",
+      "fix": "variable \"monitoring_interval\" {\n  type        = number\n  description = \"The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance\"\n  default     = 1\n\n  validation {\n    condition     = contains([0, 1, 5, 10, 15, 30, 60], var.monitoring_interval)\n    error_message = \"Valid Values: 0, 1, 5, 10, 15, 30, 60.\"\n  }\n}",
+      "fixable": true,
+      "id": "HOLDEN_BP_003",
+      "last_seen": "2026-07-16",
+      "line": 71,
+      "principle": "maintainability",
+      "remediation": "variable \"monitoring_interval\" {\n  type        = number\n  description = \"The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance\"\n  default     = 1\n\n  validation {\n    condition     = contains([0, 1, 5, 10, 15, 30, 60], var.monitoring_interval)\n    error_message = \"Valid Values: 0, 1, 5, 10, 15, 30, 60.\"\n  }\n}",
+      "resource": "var.monitoring_interval",
+      "severity": "LOW",
+      "status": "fixed",
+      "title": "var.monitoring_interval is declared type = string but the AWS provider attribute is a number"
+    },
+    {
+      "confidence": "medium",
+      "explanation": "var.instances only requires length(var.instances) > 0 (variables.tf). Aurora's HA model depends on having at least one reader instance for the writer to fail over to; a caller who supplies exactly one instance (a legitimate-looking, valid config) gets a cluster with no failover target and a single point of failure. This is a judgment call rather than a hard defect \u2014 single-instance dev/test deployments are a reasonable use of this module \u2014 so it's flagged at low confidence rather than asserted as wrong.",
+      "file": "aws_rds_cluster_instance.instances.tf",
+      "first_seen": "2026-07-16",
+      "fixable": false,
+      "id": "HOLDEN_BP_004",
+      "last_seen": "2026-07-17",
+      "line": 1,
+      "principle": "reliability",
+      "remediation": "Consider documenting the HA implication of a single-instance var.instances in the variable's description, or adding a separate opt-in variable for environments that want the module to enforce >= 2 instances.",
+      "resource": "aws_rds_cluster_instance.instances",
+      "severity": "LOW",
+      "status": "fixed",
+      "title": "Module places no lower bound on instance count, so callers can deploy a single-instance Aurora cluster with no failover target"
+    }
+  ],
+  "scan_date": "2026-07-16T00:00:00Z",
+  "scan_path": ".",
+  "suggested_policies": [
+    {
+      "rationale": "aws_rds_cluster has 9 existing security policies (encryption, access, backup, IAM) plus network-security proposals from a prior holden-ai-review pass (HLD_PROPOSED_001/002), but nothing checks preferred_maintenance_window. Confirmed to fire against this repo's aws_rds_cluster.default, which has no maintenance window set.",
+      "yaml": "id: HLD_PROPOSED_003\nname: RDS and Aurora clusters should specify a preferred maintenance window\nprinciple: reliability\nseverity: LOW\nrationale: |\n  Without preferred_maintenance_window, AWS may apply engine patches and\n  maintenance at any time of day, including during peak business hours.\n  Maintenance operations on RDS/Aurora clusters can trigger a failover or\n  brief unavailability, so leaving the window unset trades a small amount\n  of setup effort for unpredictable-timing outages.\nremediation: |\n  Set an explicit off-peak maintenance window:\n\n    resource \"aws_rds_cluster\" \"example\" {\n      preferred_maintenance_window = \"sun:03:00-sun:04:00\"\n    }\nresources:\n  aws_rds_cluster:\n    path: preferred_maintenance_window\n    not_null: true\n"
+    }
+  ]
+}

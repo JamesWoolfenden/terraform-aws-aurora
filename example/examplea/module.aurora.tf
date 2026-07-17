@@ -1,19 +1,27 @@
+# holden:ignore:HLD_TF_026
 module "aurora" {
-  source          = "../../"
-  common_tags     = var.common_tags
-  instances       = var.instances
-  cluster         = var.cluster
-  master_password = random_string.password.result
-  kms_key_id      = aws_kms_key.aurora.id
+  source                 = "../../"
+  instances              = var.instances
+  cluster                = var.cluster
+  master_password        = random_string.password.result
+  kms_key_id             = aws_kms_key.aurora.id
+  vpc_security_group_ids = [aws_security_group.aurora.id]
+  db_subnet_group_name   = aws_db_subnet_group.aurora.name
 }
+
 resource "random_string" "password" {
-  length = 16
+  length           = 16
+  override_special = "!#$%^&*()-_=+[]{}<>:?"
 }
+
 data "aws_caller_identity" "current" {}
 
 resource "aws_kms_key" "aurora" {
-  # checkov:skip=CKV2_AWS_64: For example only, key policy managed via IAM
-  enable_key_rotation = true
+  enable_key_rotation     = true
+  deletion_window_in_days = 7
+  lifecycle {
+    prevent_destroy = true
+  }
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{

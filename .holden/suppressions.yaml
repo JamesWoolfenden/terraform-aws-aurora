@@ -1,0 +1,11 @@
+suppressions:
+  - policy_id: HLD_TF_027
+    resource_id: tf_file.variables.tf
+    reason: >-
+      This module's variable count grew from 15 to 19 while closing real
+      security/correctness gaps (explicit vpc_security_group_ids and
+      db_subnet_group_name instead of falling back to the default VPC, an
+      explicit family matching the engine, and a preferred_maintenance_window)
+      — each variable is load-bearing, not incidental sprawl. Splitting the
+      module wouldn't reduce the real interface surface, just relocate it.
+    approved_by: james.woolfenden

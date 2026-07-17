@@ -1,0 +1,19 @@
+suppressions:
+  - policy_id: HLD_TF_073
+    resource_id: workspace
+    reason: >-
+      This is a self-contained example, not a reusable module — it exists to give
+      the parent aurora module real, security-compliant inputs (VPC, security
+      group, subnet group, VPC flow log with its own KMS key and IAM role) so the
+      module's required vpc_security_group_ids/db_subnet_group_name variables have
+      something real to point at. Splitting it into separate network/logging
+      modules would add indirection with no reuse benefit for a single demo.
+    approved_by: james.woolfenden
+  - policy_id: HLD_TF_029
+    resource_id: workspace
+    reason: >-
+      Same root cause as HLD_TF_073: bundling VPC/subnet/security-group/flow-log/KMS
+      resources into one example workspace to fully exercise the aurora module's
+      network inputs pushes the permission count over the informational threshold.
+      Accepted for a demo directory; not a real deployment pipeline.
+    approved_by: james.woolfenden

@@ -10,6 +10,11 @@ permissions:
   id-token: write
   contents: write
 
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  # holden:ignore:HLD_CI_017: JamesWoolfenden/.github is our own org-level shared-workflow repo, not a third-party dependency — tracked at @main intentionally
   verify:
     uses: JamesWoolfenden/.github/.github/workflows/terraform-verify.yml@main

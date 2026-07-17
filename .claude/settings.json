@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(holden --version)",
+      "Bash(holden coverage *)",
+      "Bash(python -m checkov.main --list --framework terraform)",
+      "Bash(checkov --list --framework terraform)",
+      "Bash(holden list *)",
+      "Bash(python -c ' *)",
+      "Bash(holden --help)",
+      "Read(//c/Users/jim_w/AppData/Local/Temp/holden-work/holden/**)",
+      "Bash(gh issue create --repo JamesWoolfenden/holden --title 'Extend aws_db_instance-only RDS policies to cover aws_rds_cluster_instance' --body ' *)",
+      "Bash(terraform providers *)",
+      "Read(//c/Users/jim_w/AppData/Local/Temp/holden-work/holden/policies/**)",
+      "Read(//c/Users/jim_w/AppData/Local/Temp/holden-work/holden/policies/aws/logging/**)",
+      "Bash(cd \"C:\\\\Users\\\\jim_w\\\\AppData\\\\Local\\\\Temp\\\\holden-work\\\\holden\" && go test ./... 2>&1 | tail -40)",
+      "Bash(gh pr *)"
+    ]
+  }
+}

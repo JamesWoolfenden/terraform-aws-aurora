@@ -1,0 +1,137 @@
+{
+  "findings": [
+    {
+      "confidence": "high",
+      "explanation": "Neither vpc_security_group_ids nor db_subnet_group_name is set on the cluster, and the module exposes no variable for either \u2014 every consumer of this module is forced into the account's default VPC, default subnets, and default security group. The default security group commonly permits unrestricted traffic between anything else sharing it, and default subnets are typically public. This is invisible to attribute-path rules that only check individual security settings (encryption, IAM auth, deletion protection) without checking that the network placement itself was ever specified. Neither holden nor checkov currently has a rule for this on aws_rds_cluster.",
+      "file": "aws_rds_cluster.default.tf",
+      "first_seen": "2026-07-16",
+      "fixable": false,
+      "id": "HOLDEN_AI_001",
+      "last_seen": "2026-07-17",
+      "line": 1,
+      "principle": "network-security",
+      "related_resources": [
+        "aws_rds_cluster_instance.instances"
+      ],
+      "remediation": "Add vpc_security_group_ids and db_subnet_group_name variables to the module and thread them into aws_rds_cluster.default (and db_subnet_group_name into aws_rds_cluster_instance.instances if the AWS provider version requires it there too), then require callers to supply a dedicated security group and private subnet group.",
+      "resource": "aws_rds_cluster.default",
+      "severity": "HIGH",
+      "status": "fixed",
+      "suppression_reason": null,
+      "title": "aws_rds_cluster.default has no explicit security group or subnet group"
+    },
+    {
+      "confidence": "high",
+      "explanation": "family = \"aurora5.7\" (line 5) is Aurora MySQL, but the parameter block sets log_statement and log_min_duration_statement (lines 20-28), which are PostgreSQL-only parameter names \u2014 MySQL's equivalents are slow_query_log/long_query_time or the general/audit log settings. AWS validates parameter names against the family's catalog, so this is likely to be rejected at apply time with InvalidParameterValue, or at best silently ignored, meaning the query-logging the author clearly intended (the file also sets server_audit_logging = ON directly above) is not actually happening. A rules engine sees a string value assigned to a known-looking attribute name and has no way to know it's the wrong engine's vocabulary.",
+      "file": "aws_rds_cluster_parameter_group.examplea.tf",
+      "first_seen": "2026-07-16",
+      "fixable": false,
+      "id": "HOLDEN_AI_002",
+      "last_seen": "2026-07-17",
+      "line": 20,
+      "principle": "logging-and-monitoring",
+      "related_resources": [],
+      "remediation": "Replace log_statement/log_min_duration_statement with the MySQL-family equivalents (e.g. slow_query_log = 1, long_query_time = <seconds>) if slow-query logging was the goal, or remove them if server_audit_logging already covers the intended audit requirement.",
+      "resource": "aws_rds_cluster_parameter_group.examplea",
+      "severity": "MEDIUM",
+      "status": "fixed",
+      "suppression_reason": null,
+      "title": "Parameter group sets PostgreSQL-only parameter names on a MySQL-family (aurora5.7) parameter group"
+    },
+    {
+      "confidence": "high",
+      "explanation": "random_string.password.result feeds directly into module.aurora's master_password (line 6), which becomes aws_rds_cluster.default.master_password. random_string defaults special=true with the full default special-character set, which includes '@' \u2014 a character AWS explicitly disallows in RDS/Aurora master passwords (along with '/' and '\\\"'). Roughly a chunk of generated passwords will contain one of these characters purely by chance, causing terraform apply to fail intermittently and non-deterministically at the AWS API layer, several resources downstream of where the bad value was generated. This is a 3-hop chain (random_string -> module variable -> RDS attribute) with a charset-compatibility constraint that no single-resource rule can see.",
+      "file": "example/examplea/module.aurora.tf",
+      "first_seen": "2026-07-16",
+      "fix": "resource \"random_string\" \"password\" {\n  length           = 16\n  override_special = \"!#$%^&*()-_=+[]{}<>:?\"\n}",
+      "fixable": true,
+      "id": "HOLDEN_AI_003",
+      "last_seen": "2026-07-16",
+      "line": 10,
+      "principle": "reliability",
+      "related_resources": [
+        "module.aurora"
+      ],
+      "remediation": "resource \"random_string\" \"password\" {\n  length           = 16\n  override_special = \"!#$%^&*()-_=+[]{}<>:?\"\n}\n(excludes '/', '\"', and '@', which AWS rejects in master_password)",
+      "resource": "random_string.password",
+      "severity": "MEDIUM",
+      "status": "fixed",
+      "suppression_reason": null,
+      "title": "random_string.password can generate characters AWS RDS/Aurora rejects in master_password",
+      "unresolved_since": "2026-07-16"
+    },
+    {
+      "confidence": "medium",
+      "explanation": "aws_rds_cluster.default.tf line 4 has the comment \"# check its not mysql 5.6 if engine is mysql\", showing the author intended a safeguard on engine_version. Sibling variables engine (line 52) and monitoring_interval (line 71) both have validation blocks establishing that this is the module's normal pattern, but engine_version (line 61) has none \u2014 the declared intent was never implemented. Separately, the default value itself, 5.7.mysql_aurora.2.03.2, is a specific build within the Aurora MySQL 2.x (5.7-compatible) line, which is well past AWS's standard-support cutoff and several minor releases behind current 2.x builds, meaning any consumer that doesn't override the default inherits an old, likely out-of-support engine version with accumulated unpatched issues. AWS's exact current lifecycle dates should be checked before treating the EOL claim as certain.",
+      "file": "variables.tf",
+      "first_seen": "2026-07-16",
+      "fixable": false,
+      "id": "HOLDEN_AI_004",
+      "last_seen": "2026-07-17",
+      "line": 61,
+      "principle": "patch-management",
+      "related_resources": [
+        "aws_rds_cluster.default"
+      ],
+      "remediation": "Add a validation block to engine_version rejecting known-unsafe/EOL version strings (at minimum 5.6.*), and bump the default to a current, in-support Aurora MySQL 2.x build.",
+      "resource": "var.engine_version",
+      "severity": "MEDIUM",
+      "status": "fixed",
+      "suppression_reason": null,
+      "title": "engine_version defaults to an old Aurora MySQL 5.7 build with no validation, despite a comment declaring intent to guard it"
+    },
+    {
+      "confidence": "medium",
+      "explanation": "random_string.masterpassword (length=12) has no references anywhere in the example \u2014 module.aurora.tf wires master_password from a separate resource, random_string.password (length=16), instead. Two near-identical password-generator resources exist side by side, one of them dead code. A rules engine checks attributes on individual resources; it has no similarity/reference-graph pass to notice that one of two near-duplicate resources is never used.",
+      "file": "example/examplea/random_string.masterpassword.tf",
+      "first_seen": "2026-07-16",
+      "fixable": false,
+      "id": "HOLDEN_AI_005",
+      "last_seen": "2026-07-17",
+      "line": 1,
+      "principle": "maintainability",
+      "related_resources": [
+        "random_string.password"
+      ],
+      "remediation": "Delete random_string.masterpassword.tf if random_string.password is the one actually intended to supply the master password, or confirm which resource should be wired in and remove the other.",
+      "resource": "random_string.masterpassword",
+      "severity": "LOW",
+      "status": "fixed",
+      "suppression_reason": null,
+      "title": "random_string.masterpassword is an unreferenced duplicate of random_string.password"
+    },
+    {
+      "confidence": "high",
+      "explanation": "HLD_CI_017 already flags the @main ref on this job as unpinned. What the deterministic finding doesn't capture is the blast radius: this job runs under permissions: id-token: write (OIDC credential minting, almost certainly for AWS) and contents: write (line 9-11), triggered automatically on every push to main, calling a workflow this repo doesn't control the exact commit of. By contrast, pull_request.yml's job calls the same org's reusable workflows but only carries permissions: contents: read, so the same unpinned-ref pattern there is materially lower risk. A compromise or unreviewed change to JamesWoolfenden/.github's main branch would run with cloud-credential-minting and repo-write permissions here, with no PR gate in between since the trigger is a direct push.",
+      "file": ".github/workflows/verify.yml",
+      "first_seen": "2026-07-16",
+      "fix": "uses: JamesWoolfenden/.github/.github/workflows/terraform-verify.yml@7e6376f276d0f76e4565243d9c443330804b960e",
+      "fixable": true,
+      "id": "HOLDEN_AI_006",
+      "last_seen": "2026-07-16",
+      "line": 15,
+      "principle": "supply-chain",
+      "related_resources": [],
+      "remediation": "Pin the verify.yml call to a specific commit SHA rather than @main, e.g. uses: JamesWoolfenden/.github/.github/workflows/terraform-verify.yml@7e6376f276d0f76e4565243d9c443330804b960e (current main as of 2026-07-16), and update deliberately when the shared workflow changes.",
+      "resource": "gha_job.verify.yml.verify",
+      "severity": "HIGH",
+      "status": "suppressed",
+      "supersedes": "HLD_CI_017",
+      "suppression_reason": "User: reusable workflows in JamesWoolfenden/.github don't need pinning \u2014 it's the user's own org-level shared-workflow repo, not a third-party dependency.",
+      "title": "verify.yml's unpinned reusable workflow runs with id-token:write + contents:write on every push to main"
+    }
+  ],
+  "scan_date": "2026-07-16T00:00:00Z",
+  "scan_path": ".",
+  "suggested_policies": [
+    {
+      "rationale": "aws_rds_cluster has 9 existing holden policies (encryption, public access, deletion protection, backup retention, IAM auth) but none check whether the cluster was ever assigned to a specific VPC security group. Omitting vpc_security_group_ids silently falls back to the VPC's default security group, which is a well-established AWS anti-pattern. This is a plain not_empty check on a list attribute, applicable to any Terraform using aws_rds_cluster, and confirmed to fire correctly against this repo's aws_rds_cluster.default.",
+      "yaml": "id: HLD_PROPOSED_001\nname: RDS and Aurora clusters must specify an explicit VPC security group\nprinciple: network-security\nseverity: HIGH\nrationale: |\n  When vpc_security_group_ids is omitted, AWS attaches the VPC's default\n  security group to the cluster instead. The default security group commonly\n  allows unrestricted traffic between any resource that shares it, so any\n  other workload placed in the same VPC without its own security group can\n  reach the database with no explicit authorization. Requiring an explicit,\n  purpose-built security group ensures database network access is an\n  intentional, reviewable decision rather than an accident of AWS defaults.\nremediation: |\n  Set vpc_security_group_ids to a dedicated security group scoped to the\n  application tier that needs database access:\n\n    resource \"aws_rds_cluster\" \"example\" {\n      vpc_security_group_ids = [aws_security_group.database.id]\n    }\nresources:\n  aws_rds_cluster:\n    path: vpc_security_group_ids\n    required: true\n    not_empty: true\n"
+    },
+    {
+      "rationale": "Same gap for db_subnet_group_name: without it, the cluster launches into default VPC subnets (typically public), which is an implicit rather than deliberate placement decision. Simple not_null check, applicable to any Terraform using aws_rds_cluster, confirmed to fire correctly against this repo's aws_rds_cluster.default.",
+      "yaml": "id: HLD_PROPOSED_002\nname: RDS and Aurora clusters must specify an explicit DB subnet group\nprinciple: network-security\nseverity: MEDIUM\nrationale: |\n  When db_subnet_group_name is omitted, the cluster launches into the\n  account's default VPC subnets, which are typically public subnets shared\n  across unrelated workloads. A database with no dedicated subnet group has\n  no guarantee of landing in an isolated, private network tier, and its\n  placement becomes an implicit side effect of whatever the default VPC\n  happens to contain rather than a deliberate architectural choice.\nremediation: |\n  Set db_subnet_group_name to a subnet group built from private subnets:\n\n    resource \"aws_rds_cluster\" \"example\" {\n      db_subnet_group_name = aws_db_subnet_group.private.name\n    }\nresources:\n  aws_rds_cluster:\n    path: db_subnet_group_name\n    required: true\n    not_null: true\n"
+    }
+  ],
+  "suggested_suppressions": []
+}
