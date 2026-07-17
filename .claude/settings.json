@@ -14,7 +14,9 @@
       "Read(//c/Users/jim_w/AppData/Local/Temp/holden-work/holden/policies/**)",
       "Read(//c/Users/jim_w/AppData/Local/Temp/holden-work/holden/policies/aws/logging/**)",
       "Bash(cd \"C:\\\\Users\\\\jim_w\\\\AppData\\\\Local\\\\Temp\\\\holden-work\\\\holden\" && go test ./... 2>&1 | tail -40)",
-      "Bash(gh pr *)"
+      "Bash(gh pr *)",
+      "Bash(python -c \"import json; json.load\\(open\\(r'e:\\\\Code\\\\modules\\\\aws\\\\terraform-aws-aurora\\\\.holden-bp-findings.json', encoding='utf-8'\\)\\); print\\('valid JSON'\\)\")",
+      "Bash(holden scan *)"
     ]
   }
 }

@@ -9,3 +9,13 @@ suppressions:
       — each variable is load-bearing, not incidental sprawl. Splitting the
       module wouldn't reduce the real interface surface, just relocate it.
     approved_by: james.woolfenden
+  - policy_id: HLD_TF_030
+    resource_id: workspace
+    reason: >-
+      The AWS Backup vault/plan/selection/IAM role exist specifically to answer
+      "does this RDS cluster survive an accidental terraform destroy or state
+      mistake" — a concern that's intrinsic to running an Aurora cluster safely,
+      not an unrelated service bolted on for convenience. Extracting it into a
+      separate module would relocate the coupling (still one apply, one set of
+      IAM permissions to reach both RDS and Backup) without reducing it.
+    approved_by: james.woolfenden

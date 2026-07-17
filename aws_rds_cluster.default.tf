@@ -27,11 +27,16 @@ resource "aws_rds_cluster" "default" {
 resource "aws_backup_vault" "default" {
   name        = "${var.cluster["cluster_identifier"]}-backup-vault"
   kms_key_arn = var.kms_key_id
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_backup_vault_lock_configuration" "default" {
-  backup_vault_name  = aws_backup_vault.default.name
-  min_retention_days = 35
+  backup_vault_name   = aws_backup_vault.default.name
+  changeable_for_days = 3
+  min_retention_days  = var.backup_retention_period
 }
 
 resource "aws_backup_plan" "default" {
@@ -43,8 +48,12 @@ resource "aws_backup_plan" "default" {
     schedule          = "cron(0 5 ? * * *)"
 
     lifecycle {
-      delete_after = 35
+      delete_after = var.backup_retention_period
     }
+  }
+
+  lifecycle {
+    prevent_destroy = true
   }
 }
 

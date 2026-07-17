@@ -65,14 +65,86 @@
       "severity": "LOW",
       "status": "fixed",
       "title": "Module places no lower bound on instance count, so callers can deploy a single-instance Aurora cluster with no failover target"
+    },
+    {
+      "confidence": "high",
+      "explanation": "aws_backup_vault_lock_configuration.default sets min_retention_days = 35 but no changeable_for_days. Per the AWS provider, omitting changeable_for_days locks the vault immediately and permanently in Compliance mode with no grace period to correct a mistake \u2014 not even the root account can shorten or remove the lock once applied. HLD_AWS_202 (already satisfied here) only checks that a vault lock configuration exists, not that it has a grace period; holden's own remediation text for that policy actually recommends changeable_for_days = 3, but nothing enforces it.",
+      "file": "aws_rds_cluster.default.tf",
+      "first_seen": "2026-07-17",
+      "fix": "resource \"aws_backup_vault_lock_configuration\" \"default\" {\n  backup_vault_name   = aws_backup_vault.default.name\n  changeable_for_days = 3\n  min_retention_days  = var.backup_retention_period\n}",
+      "fixable": true,
+      "id": "HOLDEN_BP_005",
+      "last_seen": "2026-07-17",
+      "line": 32,
+      "principle": "reliability",
+      "remediation": "Set changeable_for_days (e.g. 3) on aws_backup_vault_lock_configuration.default so a misconfigured retention value can still be corrected within a short grace period before the lock becomes permanent.",
+      "resource": "aws_backup_vault_lock_configuration.default",
+      "severity": "MEDIUM",
+      "status": "fixed",
+      "title": "AWS Backup vault lock has no changeable_for_days grace period \u2014 becomes permanently unrecoverable immediately"
+    },
+    {
+      "confidence": "high",
+      "explanation": "aws_backup_vault_lock_configuration.default.min_retention_days and aws_backup_plan.default's rule.lifecycle.delete_after are both hardcoded to the literal 35, duplicating var.backup_retention_period's default value (variables.tf) without referencing it. If a caller overrides backup_retention_period to a different value, native RDS automated-backup retention and the AWS Backup vault/plan retention silently diverge \u2014 exactly the kind of inconsistency a single source of truth variable is supposed to prevent.",
+      "file": "aws_rds_cluster.default.tf",
+      "first_seen": "2026-07-17",
+      "fix": "# vault lock: min_retention_days = var.backup_retention_period\n# backup plan rule.lifecycle: delete_after = var.backup_retention_period",
+      "fixable": true,
+      "id": "HOLDEN_BP_006",
+      "last_seen": "2026-07-17",
+      "line": 33,
+      "principle": "maintainability",
+      "remediation": "Replace both hardcoded 35 literals with var.backup_retention_period so AWS Backup retention always tracks the same knob callers already use for native RDS backup retention.",
+      "resource": "aws_backup_vault_lock_configuration.default",
+      "severity": "LOW",
+      "status": "fixed",
+      "title": "AWS Backup retention values are hardcoded to 35, duplicating var.backup_retention_period instead of referencing it"
+    },
+    {
+      "confidence": "high",
+      "explanation": "aws_rds_cluster.default and both KMS keys in this module (aws_kms_key.aurora, aws_kms_key.flow_log in the example) all have lifecycle.prevent_destroy = true, but aws_backup_vault.default and aws_backup_plan.default \u2014 the resources whose entire purpose is disaster recovery \u2014 have none. An accidental terraform destroy, a module refactor that drops these blocks, or a state-manipulation mistake would silently delete the safety net meant to protect against exactly that kind of accident, with no Terraform-level guard rail.",
+      "file": "aws_rds_cluster.default.tf",
+      "first_seen": "2026-07-17",
+      "fix": "resource \"aws_backup_vault\" \"default\" {\n  # ...\n  lifecycle {\n    prevent_destroy = true\n  }\n}\n\nresource \"aws_backup_plan\" \"default\" {\n  # ...\n  lifecycle {\n    prevent_destroy = true\n  }\n}",
+      "fixable": true,
+      "id": "HOLDEN_BP_007",
+      "last_seen": "2026-07-17",
+      "line": 27,
+      "principle": "maintainability",
+      "remediation": "Add a lifecycle { prevent_destroy = true } block to both aws_backup_vault.default and aws_backup_plan.default, matching the protection already applied to the cluster and its KMS keys.",
+      "resource": "aws_backup_vault.default",
+      "severity": "LOW",
+      "status": "fixed",
+      "title": "AWS Backup vault and plan have no lifecycle.prevent_destroy, unlike every other critical resource in this module"
+    },
+    {
+      "confidence": "high",
+      "explanation": "HOLDEN_BP_002 (fixed 2026-07-17) covered two distinct problems: the parameter group's family didn't match the engines var.engine claimed to support, and its name was a hardcoded literal that would collide across module instances. Only the family half was actually fixed \u2014 aws_rds_cluster_parameter_group.this still has name = \"rds-cluster-pg\" as a bare literal. Two callers of this module in the same account/region still get a DBParameterGroupAlreadyExists error on the second apply. Every other named resource this module creates (aws_backup_vault, aws_backup_plan, aws_iam_role.backup) already derives its name from var.cluster[\"cluster_identifier\"] \u2014 the parameter group is the one holdout.",
+      "file": "aws_rds_cluster_parameter_group.examplea.tf",
+      "first_seen": "2026-07-17",
+      "fix": "resource \"aws_rds_cluster_parameter_group\" \"this\" {\n  name = \"${var.cluster[\"cluster_identifier\"]}-parameter-group\"\n  # ...\n}",
+      "fixable": true,
+      "id": "HOLDEN_BP_008",
+      "last_seen": "2026-07-17",
+      "line": 8,
+      "principle": "maintainability",
+      "remediation": "Derive the name from var.cluster[\"cluster_identifier\"], matching the naming convention already used for the backup vault/plan/IAM role in this module. Note: changing name forces replacement of the parameter group resource for anyone who has already applied this module, since name is ForceNew on aws_rds_cluster_parameter_group.",
+      "resource": "aws_rds_cluster_parameter_group.this",
+      "severity": "LOW",
+      "status": "fixed",
+      "title": "Parameter group name is still a hardcoded literal, unresolved half of the earlier HOLDEN_BP_002 finding"
     }
   ],
-  "scan_date": "2026-07-16T00:00:00Z",
+  "scan_date": "2026-07-17T00:00:00Z",
   "scan_path": ".",
   "suggested_policies": [
     {
       "rationale": "aws_rds_cluster has 9 existing security policies (encryption, access, backup, IAM) plus network-security proposals from a prior holden-ai-review pass (HLD_PROPOSED_001/002), but nothing checks preferred_maintenance_window. Confirmed to fire against this repo's aws_rds_cluster.default, which has no maintenance window set.",
-      "yaml": "id: HLD_PROPOSED_003\nname: RDS and Aurora clusters should specify a preferred maintenance window\nprinciple: reliability\nseverity: LOW\nrationale: |\n  Without preferred_maintenance_window, AWS may apply engine patches and\n  maintenance at any time of day, including during peak business hours.\n  Maintenance operations on RDS/Aurora clusters can trigger a failover or\n  brief unavailability, so leaving the window unset trades a small amount\n  of setup effort for unpredictable-timing outages.\nremediation: |\n  Set an explicit off-peak maintenance window:\n\n    resource \"aws_rds_cluster\" \"example\" {\n      preferred_maintenance_window = \"sun:03:00-sun:04:00\"\n    }\nresources:\n  aws_rds_cluster:\n    path: preferred_maintenance_window\n    not_null: true\n"
+      "yaml": "id: HLD_PROPOSED_003\nname: RDS and Aurora clusters should specify a preferred maintenance window\nprinciple: reliability\nseverity: LOW\nrationale: |\n  Without preferred_maintenance_window, AWS may apply engine patches and\n  maintenance at any time of day, during peak business hours.\n  Maintenance operations on RDS/Aurora clusters can trigger a failover or\n  brief unavailability, so leaving the window unset trades a small amount\n  of setup effort for unpredictable-timing outages.\nremediation: |\n  Set an explicit off-peak maintenance window:\n\n    resource \"aws_rds_cluster\" \"example\" {\n      preferred_maintenance_window = \"sun:03:00-sun:04:00\"\n    }\nresources:\n  aws_rds_cluster:\n    path: preferred_maintenance_window\n    not_null: true\n"
+    },
+    {
+      "rationale": "HLD_AWS_202 already requires an aws_backup_vault to have a companion aws_backup_vault_lock_configuration, and its own remediation text recommends changeable_for_days = 3, but no policy actually checks that attribute is set. Confirmed to fire against this repo's aws_backup_vault_lock_configuration.default, which has min_retention_days set but no changeable_for_days.",
+      "yaml": "id: HLD_PROPOSED_004\nname: AWS Backup vault lock configurations should set a changeable_for_days grace period\nprinciple: reliability\nseverity: MEDIUM\nrationale: |\n  Without changeable_for_days, a vault lock configuration becomes immediately\n  and permanently enforced in Compliance mode \u2014 not even the root account can\n  shorten retention or remove the lock afterward. A short grace period (e.g. 3\n  days) preserves the ability to correct a misconfigured retention value before\n  the commitment becomes irreversible, without meaningfully weakening the\n  protection vault lock is meant to provide.\nremediation: |\n  Set an explicit grace period:\n\n    resource \"aws_backup_vault_lock_configuration\" \"example\" {\n      backup_vault_name   = aws_backup_vault.example.name\n      changeable_for_days = 3\n    }\nresources:\n  aws_backup_vault_lock_configuration:\n    path: changeable_for_days\n    not_null: true\n"
     }
   ]
 }

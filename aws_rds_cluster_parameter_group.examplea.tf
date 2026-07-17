@@ -5,7 +5,7 @@ moved {
 }
 
 resource "aws_rds_cluster_parameter_group" "this" {
-  name        = "rds-cluster-pg"
+  name        = "${var.cluster["cluster_identifier"]}-parameter-group"
   family      = var.family
   description = "RDS default cluster parameter group"
 

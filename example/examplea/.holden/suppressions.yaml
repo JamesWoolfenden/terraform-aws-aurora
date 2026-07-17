@@ -17,3 +17,11 @@ suppressions:
       network inputs pushes the permission count over the informational threshold.
       Accepted for a demo directory; not a real deployment pipeline.
     approved_by: james.woolfenden
+  - policy_id: HLD_TF_030
+    resource_id: workspace
+    reason: >-
+      Same root cause as HLD_TF_073: bundling VPC/subnet/security-group/flow-log/KMS
+      resources into one example workspace to fully exercise the aurora module's
+      network inputs pushes the permission count over the informational threshold.
+      Accepted for a demo directory; not a real deployment pipeline.
+    approved_by: james.woolfenden
